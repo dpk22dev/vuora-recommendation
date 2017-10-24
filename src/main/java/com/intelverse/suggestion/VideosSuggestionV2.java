@@ -16,10 +16,15 @@ public class VideosSuggestionV2 {
 	public Set<String> getVideoSuggestions(Client client, String user, List<String> tags) {
 		Set<String> videoSuggestions = new HashSet<>();
 		SearchResponse searchResponse = client.prepareSearch(Constants.ES_INDEX).setTypes(Constants.ES_EVENT_TYPE)
-				.setFetchSource("videoid", null).setQuery(QueryBuilders.termsQuery("tags", tags)).get();
+				.setFetchSource("videoid", null)
+				.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tags", tags))
+						.mustNot(QueryBuilders.termQuery("requestee", user)))
+				.get();
 		for (SearchHit hit : searchResponse.getHits().getHits()) {
-			String videoId = hit.getSource().get("videoid").toString();
-			videoSuggestions.add(videoId);
+			if (hit.getSource().get("videoid") != null) {
+				String videoId = hit.getSource().get("videoid").toString();
+				videoSuggestions.add(videoId);
+			}
 		}
 		return videoSuggestions;
 	}

@@ -10,7 +10,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
 import com.intelverse.util.Constants;
-import com.mongodb.DB;
 
 public class UserSuggestionsV2 {
 
@@ -19,8 +18,10 @@ public class UserSuggestionsV2 {
 		SearchResponse searchResponse = client.prepareSearch(Constants.ES_INDEX).setTypes(Constants.ES_USERS_TYPE)
 				.setQuery(QueryBuilders.termsQuery("tags", tags)).setSize(100).get();
 		for (SearchHit hit : searchResponse.getHits().getHits()) {
-			String uid = hit.getSource().get("id").toString();
-			userSuggestions.add(uid);
+			if (hit.getSource().get("id") != null) {
+				String uid = hit.getSource().get("id").toString();
+				userSuggestions.add(uid);
+			}
 		}
 		userSuggestions.remove(user);
 		return userSuggestions;

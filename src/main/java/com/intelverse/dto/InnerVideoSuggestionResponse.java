@@ -1,6 +1,5 @@
 package com.intelverse.dto;
 
-import java.util.List;
 import java.util.Set;
 
 public class InnerVideoSuggestionResponse {

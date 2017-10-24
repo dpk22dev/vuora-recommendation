@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +53,9 @@ public class RecommendationRunnerV2 {
 		VideosSuggestionV2 videosSuggestionV2 = new VideosSuggestionV2();
 		UserSuggestionsV2 userSuggestionsV2 = new UserSuggestionsV2();
 		RatedUser ratedUser = null;
-		SearchResponse searchResp = client.prepareSearch(Constants.ES_INDEX).setTypes(Constants.ES_USERS_TYPE)
-				.setQuery(QueryBuilders.termQuery("id", user)).setSize(1).get();
-		if (searchResp.getHits().getTotalHits() > 0) {
-			SearchHit hit = searchResp.getHits().getHits()[0];
-			List<String> tags = (List<String>) hit.getSource().get("tags");
+		GetResponse searchResp = client.prepareGet(Constants.ES_INDEX, Constants.ES_USERS_TYPE, user).get();
+		if (searchResp.isExists()) {
+			List<String> tags = (List<String>) searchResp.getSource().get("tags");
 			Set<String> seminars = seminarSuggestionsV2.getSeminarSuggestions(client, user, tags);
 			Set<String> users = userSuggestionsV2.getUserSuggestions(client, user, tags);
 			Set<String> vidoes = videosSuggestionV2.getVideoSuggestions(client, user, tags);
@@ -66,6 +64,7 @@ public class RecommendationRunnerV2 {
 			userRepository.save(ratedUser);
 		}
 		return ratedUser;
+
 	}
 
 	@Scheduled(fixedDelay = 86400000)

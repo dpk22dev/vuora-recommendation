@@ -16,10 +16,15 @@ public class SeminarSuggestionsV2 {
 	public Set<String> getSeminarSuggestions(Client client, String user, List<String> tags) {
 		Set<String> seminarSuggestions = new HashSet<>();
 		SearchResponse searchResponse = client.prepareSearch(Constants.ES_INDEX).setTypes(Constants.ES_EVENT_TYPE)
-				.setFetchSource("videoid", null).setQuery(QueryBuilders.termsQuery("tags", tags)).setSize(100).get();
+				.setFetchSource("id", null)
+				.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tags", tags))
+						.mustNot(QueryBuilders.termQuery("requestee", user)))
+				.setSize(100).get();
 		for (SearchHit hit : searchResponse.getHits().getHits()) {
-			String seminarId = hit.getSource().get("id").toString();
-			seminarSuggestions.add(seminarId);
+			if (hit.getSource().get("id") != null) {
+				String seminarId = hit.getSource().get("id").toString();
+				seminarSuggestions.add(seminarId);
+			}
 		}
 		return seminarSuggestions;
 	}
