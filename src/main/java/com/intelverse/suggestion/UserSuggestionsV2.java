@@ -8,9 +8,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.stereotype.Service;
 
 import com.intelverse.util.Constants;
 
+@Service
 public class UserSuggestionsV2 {
 
 	public Set<String> getUserSuggestions(Client client, String user, List<String> tags) {
@@ -19,7 +21,7 @@ public class UserSuggestionsV2 {
 				.setQuery(QueryBuilders.termsQuery("tags", tags)).setSize(100).get();
 		for (SearchHit hit : searchResponse.getHits().getHits()) {
 			if (hit.getSource().get("id") != null) {
-				String uid = hit.getSource().get("id").toString();
+				String uid = hit.getSource().get("userId").toString();
 				userSuggestions.add(uid);
 			}
 		}

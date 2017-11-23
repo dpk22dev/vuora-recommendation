@@ -1,5 +1,6 @@
 package com.intelverse.dto;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -11,7 +12,7 @@ public class RatedUser {
 	@Id
 	private String id;
 	private Set<String> tags;
-	private Set<String> videos;
+	private Object videos;
 	private Set<String> users;
 	private Set<String> seminars;
 
@@ -19,7 +20,7 @@ public class RatedUser {
 		super();
 	}
 
-	public RatedUser(String id, Set<String> tags, Set<String> videos, Set<String> users, Set<String> seminars) {
+	public RatedUser(String id, Set<String> tags, Object videos, Set<String> users, Set<String> seminars) {
 		super();
 		this.id = id;
 		this.tags = tags;
@@ -44,11 +45,11 @@ public class RatedUser {
 		this.id = id;
 	}
 
-	public Set<String> getVideos() {
+	public Object getVideos() {
 		return videos;
 	}
 
-	public void setVideos(Set<String> videos) {
+	public void setVideos(Object videos) {
 		this.videos = videos;
 	}
 

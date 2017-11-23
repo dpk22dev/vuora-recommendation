@@ -8,9 +8,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.stereotype.Service;
 
 import com.intelverse.util.Constants;
 
+@Service
 public class SeminarSuggestionsV2 {
 
 	public Set<String> getSeminarSuggestions(Client client, String user, List<String> tags) {
